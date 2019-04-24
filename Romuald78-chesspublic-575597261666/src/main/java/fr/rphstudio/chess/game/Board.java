@@ -51,8 +51,52 @@ public class Board {
   
         this.cases[p0.x][p0.y].increaseNbMoves();
         
-        this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
-        this.cases[p0.x][p0.y] = null ;
+        if (this.cases[p1.x][p1.y] != null) {
+            
+            if( this.cases[p1.x][p1.y].getChessColor() == this.cases[p0.x][p0.y].getChessColor() ) {
+                
+                if ((p1.x == 0)&&(p1.y == 0)) {
+                    
+                    this.cases[3][0] = this.cases[0][0] ;
+                    this.cases[0][0] = null ;
+                    
+                    this.cases[2][0] = this.cases[4][0] ;
+                    this.cases[4][0] = null ;
+                }
+                else if ((p1.x == 7)&&(p1.y == 0)) {
+                    
+                    this.cases[5][0] = this.cases[7][0] ;
+                    this.cases[7][0] = null ;
+                    
+                    this.cases[6][0] = this.cases[4][0] ;
+                    this.cases[4][0] = null ;
+                }
+                else if ((p1.x == 0)&&(p1.y == 7)) {
+                    
+                    this.cases[3][7] = this.cases[0][7] ;
+                    this.cases[0][7] = null ;
+                    
+                    this.cases[2][7] = this.cases[4][7] ;
+                    this.cases[4][7] = null ;
+                }
+                else if ((p1.x == 7)&&(p1.y == 7)) {
+                    
+                    this.cases[5][7] = this.cases[7][7] ;
+                    this.cases[7][7] = null ;
+                    
+                    this.cases[6][7] = this.cases[4][7] ;
+                    this.cases[4][7] = null ;
+                }
+            }
+            else {
+                this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
+                this.cases[p0.x][p0.y] = null ;  
+            }
+        }
+        else {
+            this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
+            this.cases[p0.x][p0.y] = null ; 
+        }
     }
     
     public Piece getPiece(ChessPosition position) {
