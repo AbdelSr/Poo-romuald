@@ -126,7 +126,11 @@ public interface IChess
             this.x = x0;
             this.y = y0;
         }
-
+        
+        public boolean isValid() {
+            
+           return (this.x < 8)&&(this.x >= 0)&&(this.y < 8)&&(this.y >= 0) ;
+        }
         
         /**
          * Redefinition of the Object class equals method.
