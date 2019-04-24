@@ -16,10 +16,11 @@ import java.util.List;
 public class ChessModel implements IChess {
     
     private static IChess instance; // by default equals to null
+    private Board board ;
     
     // constructor
     private ChessModel(){
-        
+        this.board = new Board() ;
     }
     
     
@@ -41,18 +42,31 @@ public class ChessModel implements IChess {
 
     @Override
     public ChessType getPieceType(ChessPosition p) throws EmptyCellException, OutOfBoardException {
-        throw new EmptyCellException(); 
+        Piece piece = this.board.getPiece(p) ;
         
+        if (piece != null){
+            return piece.getChessType() ; 
+        }
+        
+        throw new EmptyCellException() ;
     }
 
     @Override
     public ChessColor getPieceColor(ChessPosition p) throws EmptyCellException, OutOfBoardException {
-        throw new EmptyCellException();     
+        Piece piece = this.board.getPiece(p) ;
+        
+        if (piece != null){
+            return piece.getChessColor() ; 
+        }
+        
+        throw new EmptyCellException() ;
     }
 
     @Override
     public int getNbRemainingPieces(ChessColor color) {
-        return 5;
+        int pieceNombre = this.board.getPiecesNombre(color) ;
+        
+        return pieceNombre ;
     }
 
     @Override
