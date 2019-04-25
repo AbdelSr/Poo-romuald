@@ -75,8 +75,10 @@ public class ChessModel implements IChess {
         
         if (this.board.getPiece(p) != null) {
             
-            Piece piece = this.board.getPiece(p) ;
-            listPosition = piece.getMove(p, this.board) ;
+            if (board.getKingState(board.getPiece(p).getChessColor() ) != ChessKingState.KING_ISDEAD) {
+                
+                listPosition = this.board.getKingSafePositionMove(p) ; 
+            }
         }
         
         return listPosition ;
@@ -100,7 +102,8 @@ public class ChessModel implements IChess {
 
     @Override
     public boolean undoLastMove() {
-        return false;
+        boolean changement = this.board.remontada() ;
+        return changement;
     }
 
     @Override

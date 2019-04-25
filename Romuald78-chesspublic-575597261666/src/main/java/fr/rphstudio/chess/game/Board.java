@@ -19,6 +19,7 @@ import java.util.List;
 public class Board {
     
     private Piece[][] cases ;
+    private MoveInfo moveInfo ;
     
     public Board() {
         
@@ -52,6 +53,8 @@ public class Board {
     
     public void movePiece(ChessPosition p0, ChessPosition p1) {
   
+        this.moveInfo = new MoveInfo(p0, p1, this) ;
+        
         this.cases[p0.x][p0.y].increaseNbMoves();
         
         boolean isRoque = false ;
@@ -106,16 +109,18 @@ public class Board {
     
     private void verificationQueen(ChessPosition p0, ChessPosition p1) {
         
-        if(p1.y == 0) {
-            
-            if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_WHITE){
-                this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_WHITE, new Queen()) ;
+        if (this.cases[p0.x][p0.y].getChessType() == ChessType.TYP_PAWN) {
+            if(p1.y == 0) {
+
+                if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_WHITE){
+                    this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_WHITE, new Queen()) ;
+                }
             }
-        }
-        else if(p1.y == 7) {
-            
-            if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_BLACK){
-                this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_BLACK, new Queen()) ;
+            else if(p1.y == 7) {
+
+                if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_BLACK){
+                    this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_BLACK, new Queen()) ;
+                }
             }
         }
     }
@@ -123,7 +128,12 @@ public class Board {
     public ChessKingState getKingState(ChessColor color) {
         
         ChessKingState kingState = ChessKingState.KING_SAFE ;
+        
         ChessPosition kingPosition = this.getKingPosition(color) ;
+        
+        if (kingPosition == null) {
+            return ChessKingState.KING_ISDEAD ;
+        }
         
         for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
             
@@ -183,6 +193,42 @@ public class Board {
         return piece ;
     }
     
+    public List<ChessPosition> getKingSafePositionMove(ChessPosition p) {
+        
+        List<ChessPosition> newListPosition = new ArrayList<ChessPosition>() ;
+        List<ChessPosition> listPosition = this.cases[p.x][p.y].getMove(p, this) ;
+        
+        for (ChessPosition position : listPosition) {
+            
+            if(this.cases[p.x][p.y].getChessType() != ChessType.TYP_KING) {
+                
+                Piece pieceTemporaire = this.cases[position.x][position.y] ;
+                this.cases[position.x][position.y] = new Piece(ChessType.TYP_PAWN, this.cases[p.x][p.y].getChessColor(), new Pawn()) ;
+
+                if (this.getKingState(this.cases[position.x][position.y].getChessColor()) == ChessKingState.KING_SAFE) {
+                    newListPosition.add(position) ;
+                }
+
+                this.cases[position.x][position.y] = pieceTemporaire ;
+            }
+            else {
+                
+                Piece pieceTemporaire = this.cases[position.x][position.y] ;
+                this.cases[position.x][position.y] = new Piece(ChessType.TYP_KING, this.cases[p.x][p.y].getChessColor(), new King()) ;
+                this.cases[p.x][p.y] = null ;
+                
+                if (this.getKingState(this.cases[position.x][position.y].getChessColor()) == ChessKingState.KING_SAFE) {
+                    newListPosition.add(position) ;
+                }
+                
+                this.cases[p.x][p.y] = new Piece(ChessType.TYP_KING, this.cases[position.x][position.y].getChessColor(), new King()) ;
+                this.cases[position.x][position.y] = pieceTemporaire ;
+            }
+        }
+        
+        return newListPosition ;
+    }
+    
     public int getPiecesNombre(ChessColor color){
         
         int pieceNombre = 0 ;
@@ -200,5 +246,19 @@ public class Board {
         }
         
         return pieceNombre ;
+    }
+    
+    public boolean remontada() {
+        
+        if (this.moveInfo != null) {
+            this.cases[this.moveInfo.p0.x][this.moveInfo.p0.y] = this.moveInfo.piece0 ;
+            this.cases[this.moveInfo.p1.x][this.moveInfo.p1.y] = this.moveInfo.piece1 ;
+
+            this.moveInfo = null ;
+            
+            return true ;
+        }
+        
+        return false ;
     }
 }

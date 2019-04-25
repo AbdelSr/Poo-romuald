@@ -37,7 +37,7 @@ public class King implements IMove {
                         continue ;
                     }
                 }
-               
+                
                 listPosition.add(position2) ;
             }
         }

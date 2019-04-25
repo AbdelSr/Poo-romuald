@@ -5,6 +5,7 @@
  */
 package fr.rphstudio.chess.game;
 
+import fr.rphstudio.chess.interf.IChess.ChessKingState;
 import fr.rphstudio.chess.interf.IChess.ChessPosition;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +36,8 @@ public class Knight implements IMove {
                         continue ;
                     }
                 }
-               
-                listPosition.add(new ChessPosition(position.x + nombre[i][0], position.y + nombre[i][1])) ;
+                
+                listPosition.add(position2) ;
             }
         }
                 
