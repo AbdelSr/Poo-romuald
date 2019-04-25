@@ -53,6 +53,8 @@ public class Board {
         
         boolean isRoque = false ;
         
+        this.verificationQueen(p0, p1) ;
+        
         if (this.cases[p1.x][p1.y] != null) {
             
             if( this.cases[p1.x][p1.y].getChessColor() == this.cases[p0.x][p0.y].getChessColor() ) {
@@ -96,6 +98,22 @@ public class Board {
         if(!isRoque) {
             this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
             this.cases[p0.x][p0.y] = null ; 
+        }
+    }
+    
+    public void verificationQueen(ChessPosition p0, ChessPosition p1) {
+        
+        if(p1.y == 0) {
+            
+            if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_WHITE){
+                this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_WHITE, new Queen()) ;
+            }
+        }
+        else if(p1.y == 7) {
+            
+            if(this.cases[p0.x][p0.y].getChessColor() == ChessColor.CLR_BLACK){
+                this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_BLACK, new Queen()) ;
+            }
         }
     }
     
