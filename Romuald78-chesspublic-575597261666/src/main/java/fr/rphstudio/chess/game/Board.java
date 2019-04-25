@@ -51,9 +51,13 @@ public class Board {
   
         this.cases[p0.x][p0.y].increaseNbMoves();
         
+        boolean isRoque = false ;
+        
         if (this.cases[p1.x][p1.y] != null) {
             
             if( this.cases[p1.x][p1.y].getChessColor() == this.cases[p0.x][p0.y].getChessColor() ) {
+                
+                isRoque = true ;
                 
                 if ((p1.x == 0)&&(p1.y == 0)) {
                     
@@ -88,12 +92,8 @@ public class Board {
                     this.cases[4][7] = null ;
                 }
             }
-            else {
-                this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
-                this.cases[p0.x][p0.y] = null ;  
-            }
         }
-        else {
+        if(!isRoque) {
             this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
             this.cases[p0.x][p0.y] = null ; 
         }

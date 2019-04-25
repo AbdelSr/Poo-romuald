@@ -20,7 +20,7 @@ public class ChessModel implements IChess {
     
     // constructor
     private ChessModel(){
-        this.board = new Board() ;
+        this.reinit() ;
     }
     
     
@@ -36,8 +36,7 @@ public class ChessModel implements IChess {
     
     @Override
     public void reinit() {
-        System.out.println("reinit method from IChess interface");
-        System.out.println("void = methode ne retourne rien");
+        this.board = new Board() ;
     }
 
     @Override
@@ -101,7 +100,7 @@ public class ChessModel implements IChess {
 
     @Override
     public boolean undoLastMove() {
-        return true;
+        return false;
     }
 
     @Override

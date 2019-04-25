@@ -42,108 +42,59 @@ public class King implements IMove {
             }
         }
         
-        boolean jouableBL = false ;
-        boolean jouableBR = false ;
-        boolean jouableWL = false ;
-        boolean jouableWR = false ;
+        boolean jouableL = false ;
+        boolean jouableR = false ;
         
-        if (board.getPiece(position).getChessColor() == ChessColor.CLR_BLACK) {
-            if (!board.getPiece(position).hasMoved()) {
+        ////////////////////////////////////////////
+        
+        if (!board.getPiece(position).hasMoved()) {
 
-                Piece tourG = board.getPiece(new ChessPosition(0,0)) ;
+            Piece tourG = board.getPiece(new ChessPosition(0,position.y)) ;
                 
-                if (tourG != null) {
+            if (tourG != null) {
 
-                    if(!tourG.hasMoved()) {
+                if(!tourG.hasMoved()) {
                         
-                        for (int i=1 ; i < 4 ; i++) {
+                    for (int i=1 ; i < 4 ; i++) {
                             
-                            if (board.getPiece(new ChessPosition((4 - i), 0)) == null) {
-                                jouableBL = true ;
-                            }
-                            else {
-                                jouableBL = false ;
-                                break ;
-                            }
+                        if (board.getPiece(new ChessPosition((4 - i), position.y)) == null) {
+                            jouableL = true ;
                         }
-                    }
-                }
-                
-                Piece tourD = board.getPiece(new ChessPosition(7,0)) ;
-                
-                if (tourD != null) {
-
-                    if(!tourD.hasMoved()) {
-                        
-                        for (int i=1 ; i < 3 ; i++) {
-                            
-                            if (board.getPiece(new ChessPosition((4 + i), 0)) == null) {
-                                jouableBR = true ;
-                            }
-                            else {
-                                jouableBR = false ;
-                                break ;
-                            }
+                        else {
+                            jouableL = false ;
+                            break ;
                         }
                     }
                 }
             }
-        }
-        else {
-            if (!board.getPiece(position).hasMoved()) {
-
-                Piece tourG = board.getPiece(new ChessPosition(0,7)) ;
                 
-                if (tourG != null) {
+            Piece tourD = board.getPiece(new ChessPosition(7,position.y)) ;
+                
+            if (tourD != null) {
 
-                    if(!tourG.hasMoved()) {
+                if(!tourD.hasMoved()) {
                         
-                        for (int i=1 ; i < 4 ; i++) {
+                    for (int i=1 ; i < 3 ; i++) {
                             
-                            if (board.getPiece(new ChessPosition((4 - i), 7)) == null) {
-                                jouableWL = true ;
-                            }
-                            else {
-                                jouableWL = false ;
-                                break ;
-                            }
+                        if (board.getPiece(new ChessPosition((4 + i), position.y)) == null) {
+                            jouableR = true ;
                         }
-                    }
-                }
-                
-                Piece tourD = board.getPiece(new ChessPosition(7,7)) ;
-                
-                if (tourD != null) {
-
-                    if(!tourD.hasMoved()) {
-                        
-                        for (int i=1 ; i < 3 ; i++) {
-                            
-                            if (board.getPiece(new ChessPosition((4 + i), 7)) == null) {
-                                jouableWR = true ;
-                            }
-                            else {
-                                jouableWR = false ;
-                                break ;
-                            }
+                        else {
+                            jouableR = false ;
+                            break ;
                         }
                     }
                 }
             }
         }
         
-        if (jouableBL) {
-            listPosition.add(new ChessPosition(0, 0)) ;
+        if (jouableL) {
+            listPosition.add(new ChessPosition(0, position.y)) ;
         }
-        if (jouableBR) {
-            listPosition.add(new ChessPosition(7, 0)) ;
+        if (jouableR) {
+            listPosition.add(new ChessPosition(7, position.y)) ;
         }
-        if (jouableWL) {
-            listPosition.add(new ChessPosition(0, 7)) ;
-        }
-        if (jouableWR) {
-            listPosition.add(new ChessPosition(7, 7)) ;
-        }        
+     
         
         return listPosition ;
     }
