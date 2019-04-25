@@ -20,6 +20,7 @@ public class Board {
     
     private Piece[][] cases ;
     private MoveInfo moveInfo ;
+    private Piece lastPieceRemoved ;
     
     public Board() {
         
@@ -51,9 +52,10 @@ public class Board {
         this.cases[IChess.BOARD_POS_X_KINGSIDE_ROOK][0] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_BLACK, new Rook()) ;
     }
     
-    public void movePiece(ChessPosition p0, ChessPosition p1) {
+    public Piece movePiece(ChessPosition p0, ChessPosition p1) {
   
         this.moveInfo = new MoveInfo(p0, p1, this) ;
+        Piece removedPiece = null ;
         
         this.cases[p0.x][p0.y].increaseNbMoves();
         
@@ -100,11 +102,16 @@ public class Board {
                     this.cases[4][7] = null ;
                 }
             }
+            else {
+                removedPiece = this.cases[p1.x][p1.y] ;
+            }
         }
         if(!isRoque) {
             this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
             this.cases[p0.x][p0.y] = null ; 
         }
+        
+        return removedPiece ;
     }
     
     private void verificationQueen(ChessPosition p0, ChessPosition p1) {
@@ -200,30 +207,17 @@ public class Board {
         
         for (ChessPosition position : listPosition) {
             
-            if(this.cases[p.x][p.y].getChessType() != ChessType.TYP_KING) {
-                
-                Piece pieceTemporaire = this.cases[position.x][position.y] ;
-                this.cases[position.x][position.y] = new Piece(ChessType.TYP_PAWN, this.cases[p.x][p.y].getChessColor(), new Pawn()) ;
+            Piece pieceTemporaire = this.cases[position.x][position.y] ;
+            Piece pieceOrigine = this.cases[p.x][p.y] ;
+            this.cases[position.x][position.y] = pieceOrigine ;
+            this.cases[p.x][p.y] = null ;
 
-                if (this.getKingState(this.cases[position.x][position.y].getChessColor()) == ChessKingState.KING_SAFE) {
-                    newListPosition.add(position) ;
-                }
+            if (this.getKingState(this.cases[position.x][position.y].getChessColor()) == ChessKingState.KING_SAFE) {
+            newListPosition.add(position) ;
+            }
 
-                this.cases[position.x][position.y] = pieceTemporaire ;
-            }
-            else {
-                
-                Piece pieceTemporaire = this.cases[position.x][position.y] ;
-                this.cases[position.x][position.y] = new Piece(ChessType.TYP_KING, this.cases[p.x][p.y].getChessColor(), new King()) ;
-                this.cases[p.x][p.y] = null ;
-                
-                if (this.getKingState(this.cases[position.x][position.y].getChessColor()) == ChessKingState.KING_SAFE) {
-                    newListPosition.add(position) ;
-                }
-                
-                this.cases[p.x][p.y] = new Piece(ChessType.TYP_KING, this.cases[position.x][position.y].getChessColor(), new King()) ;
-                this.cases[position.x][position.y] = pieceTemporaire ;
-            }
+            this.cases[position.x][position.y] = pieceTemporaire ;
+            this.cases[p.x][p.y] = pieceOrigine ;
         }
         
         return newListPosition ;
@@ -248,9 +242,18 @@ public class Board {
         return pieceNombre ;
     }
     
+    public Piece getLastPieceRemoved() {
+        
+        
+        return this.lastPieceRemoved ;
+    }
+    
     public boolean remontada() {
         
         if (this.moveInfo != null) {
+            
+            this.lastPieceRemoved = this.moveInfo.piece1 ;
+            
             this.cases[this.moveInfo.p0.x][this.moveInfo.p0.y] = this.moveInfo.piece0 ;
             this.cases[this.moveInfo.p1.x][this.moveInfo.p1.y] = this.moveInfo.piece1 ;
 

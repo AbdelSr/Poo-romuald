@@ -17,6 +17,7 @@ public class ChessModel implements IChess {
     
     private static IChess instance; // by default equals to null
     private Board board ;
+    private PieceManager pieceMgr ;
     
     // constructor
     private ChessModel(){
@@ -37,6 +38,7 @@ public class ChessModel implements IChess {
     @Override
     public void reinit() {
         this.board = new Board() ;
+        this.pieceMgr = new PieceManager() ;
     }
 
     @Override
@@ -86,7 +88,12 @@ public class ChessModel implements IChess {
 
     @Override
     public void movePiece(ChessPosition p0, ChessPosition p1) {
-        this.board.movePiece(p0, p1);
+        
+        Piece removedPiece = this.board.movePiece(p0, p1);
+        
+        if (removedPiece != null) {
+            this.pieceMgr.addPiece(removedPiece.getChessColor(), removedPiece.getChessType()) ;
+        }
     }
 
     @Override
@@ -95,14 +102,26 @@ public class ChessModel implements IChess {
     }
 
     @Override
-    public List<ChessType> getRemovedPieces(ChessColor color) {        
-        ArrayList <ChessType> removedPieces = new ArrayList<ChessType>();
-        return(removedPieces);
+    public List<ChessType> getRemovedPieces(ChessColor color) {
+        
+        List<ChessType> removedPiecesList ;
+        removedPiecesList = this.pieceMgr.getList(color) ;
+        
+        return removedPiecesList ;
     }
 
     @Override
     public boolean undoLastMove() {
         boolean changement = this.board.remontada() ;
+        
+        if(changement) {
+            
+            if(this.board.getLastPieceRemoved() != null) {
+                
+                this.pieceMgr.removeLastPiece(this.board.getLastPieceRemoved().getChessColor());
+            }
+        }
+        
         return changement;
     }
 
@@ -110,5 +129,4 @@ public class ChessModel implements IChess {
     public long getPlayerDuration(ChessColor color, boolean isPlaying) {
         return 0;
     }
-    
 }
