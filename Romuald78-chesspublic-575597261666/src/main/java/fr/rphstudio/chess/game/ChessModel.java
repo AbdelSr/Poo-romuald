@@ -89,7 +89,7 @@ public class ChessModel implements IChess {
 
     @Override
     public ChessKingState getKingState(ChessColor color) {
-        return ChessKingState.KING_SAFE;
+        return this.board.getKingState(color) ;
     }
 
     @Override

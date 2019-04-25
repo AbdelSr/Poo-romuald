@@ -7,8 +7,11 @@ package fr.rphstudio.chess.game;
 
 import fr.rphstudio.chess.interf.IChess;
 import fr.rphstudio.chess.interf.IChess.ChessColor;
+import fr.rphstudio.chess.interf.IChess.ChessKingState;
 import fr.rphstudio.chess.interf.IChess.ChessPosition;
 import fr.rphstudio.chess.interf.IChess.ChessType;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author serourabderaouf
@@ -101,7 +104,7 @@ public class Board {
         }
     }
     
-    public void verificationQueen(ChessPosition p0, ChessPosition p1) {
+    private void verificationQueen(ChessPosition p0, ChessPosition p1) {
         
         if(p1.y == 0) {
             
@@ -115,6 +118,58 @@ public class Board {
                 this.cases[p0.x][p0.y] = new Piece(ChessType.TYP_QUEEN, ChessColor.CLR_BLACK, new Queen()) ;
             }
         }
+    }
+    
+    public ChessKingState getKingState(ChessColor color) {
+        
+        ChessKingState kingState = ChessKingState.KING_SAFE ;
+        ChessPosition kingPosition = this.getKingPosition(color) ;
+        
+        for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
+            
+            for(int j=0 ; j < IChess.BOARD_HEIGHT ; j++) {
+                
+                Piece piece = this.cases[i][j] ;
+                
+                if (piece != null) {
+                    if (piece.getChessColor() != color) {
+
+                        List<ChessPosition> listPosition = new ArrayList<ChessPosition>() ;
+                        listPosition = piece.getMove(new ChessPosition(i,j), this) ;
+                        
+                        for (ChessPosition cP : listPosition) {
+                            
+                            if (cP.equals(kingPosition)) {
+                                return ChessKingState.KING_THREATEN ;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return kingState ;
+    }
+    
+    private ChessPosition getKingPosition(ChessColor color) {
+        
+        for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
+            
+            for(int j=0 ; j < IChess.BOARD_HEIGHT ; j++) {
+                
+                Piece piece = this.cases[i][j] ;
+                
+                if (piece != null) {
+                    
+                    if ( (piece.getChessType() == ChessType.TYP_KING) && (piece.getChessColor() == color) ) {
+
+                        return new ChessPosition(i, j) ;
+                    }
+                }
+            }
+        }
+        
+        return null ;
     }
     
     public Piece getPiece(ChessPosition position) {
