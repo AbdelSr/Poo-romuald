@@ -243,8 +243,6 @@ public class Board {
     }
     
     public Piece getLastPieceRemoved() {
-        
-        
         return this.lastPieceRemoved ;
     }
     
@@ -256,6 +254,21 @@ public class Board {
             
             this.cases[this.moveInfo.p0.x][this.moveInfo.p0.y] = this.moveInfo.piece0 ;
             this.cases[this.moveInfo.p1.x][this.moveInfo.p1.y] = this.moveInfo.piece1 ;
+            
+            if (this.moveInfo.isRoque()) {
+                
+                this.cases[this.moveInfo.p1.x][this.moveInfo.p1.y].reinitialiseNbMoves();
+                this.cases[this.moveInfo.p0.x][this.moveInfo.p0.y].reinitialiseNbMoves();
+                
+                if (this.moveInfo.p1.x == 0) {
+                    this.cases[3][this.moveInfo.p1.y] = null ;
+                    this.cases[2][this.moveInfo.p1.y] = null ;
+                }
+                else if (this.moveInfo.p1.x == 7) {
+                    this.cases[6][this.moveInfo.p1.y] = null ;
+                    this.cases[5][this.moveInfo.p1.y] = null ;
+                }
+            }
 
             this.moveInfo = null ;
             

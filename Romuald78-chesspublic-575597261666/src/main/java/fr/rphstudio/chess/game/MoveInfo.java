@@ -28,4 +28,16 @@ public class MoveInfo {
         this.piece0 = myBoard.getPiece(myP0) ;
         this.piece1 = myBoard.getPiece(myP1) ;
     }
+    
+    public boolean isRoque() {
+        
+        if ((this.piece0 != null) && (this.piece1 != null)) {
+            
+            if (this.piece0.getChessColor() == this.piece1.getChessColor()) {
+                return true ;
+            }
+        }
+        
+        return false ;
+    }
 }

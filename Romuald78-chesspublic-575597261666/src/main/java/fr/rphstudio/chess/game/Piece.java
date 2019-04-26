@@ -36,6 +36,10 @@ public class Piece {
         return this.color ;
     }
     
+    public void reinitialiseNbMoves() {
+        this.nbMoves = 0 ;
+    }
+        
     public void increaseNbMoves() {
         this.nbMoves++ ;
     }
