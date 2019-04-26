@@ -18,6 +18,7 @@ public class ChessModel implements IChess {
     private static IChess instance; // by default equals to null
     private Board board ;
     private PieceManager pieceMgr ;
+    private boolean activeIA ;
     
     // constructor
     private ChessModel(){
@@ -39,6 +40,7 @@ public class ChessModel implements IChess {
     public void reinit() {
         this.board = new Board() ;
         this.pieceMgr = new PieceManager() ;
+        this.activeIA = false ;
     }
 
     @Override
@@ -78,21 +80,32 @@ public class ChessModel implements IChess {
         if (this.board.getPiece(p) != null) {
             
             listPosition = this.board.getKingSafePositionMove(p) ;
-            
         }
+        
+
 
         return listPosition ;
     }
 
     @Override
     public void movePiece(ChessPosition p0, ChessPosition p1) {
-        
-        if (this.board.getPiece(p0).getChessColor() == ChessColor.CLR_BLACK) {
             
-            this.board.tourIA() ;
+            
+        // Pseudo IA qui fonctionne a moitier et qui est très con.
+        if (this.activeIA) {
+            if (this.board.getPiece(p0).getChessColor() == ChessColor.CLR_BLACK) {
+                this.board.tourIA();
+            }
+            else {
+                Piece removedPiece = this.board.movePiece(p0, p1);
+    
+                if (removedPiece != null) {
+                    this.pieceMgr.addPiece(removedPiece.getChessColor(), removedPiece.getChessType()) ;
+               }
+            }
         }
         else {
-          
+
             Piece removedPiece = this.board.movePiece(p0, p1);
 
             if (removedPiece != null) {

@@ -30,12 +30,15 @@ public class Board {
         
         this.cases = new Piece [IChess.BOARD_WIDTH][IChess.BOARD_HEIGHT] ;
         
+        // Creating the table of Pieces of our Chess game
+        
+        // Creating Pawn black et white
         for(int i=0 ; i < IChess.BOARD_WIDTH ; i++) {
             this.cases[i][IChess.BOARD_POS_Y_WHITE_PAWNS] = new Piece(ChessType.TYP_PAWN, ChessColor.CLR_WHITE, new Pawn()) ;
             this.cases[i][IChess.BOARD_POS_Y_BLACK_PAWNS] = new Piece(ChessType.TYP_PAWN, ChessColor.CLR_BLACK, new Pawn()) ;
         }
         
-        // White
+        // White pieces
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_ROOK][7] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_WHITE, new Rook()) ;
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_KNIGHT][7] = new Piece(ChessType.TYP_KNIGHT, ChessColor.CLR_WHITE, new Knight()) ;
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_BISHOP][7] = new Piece(ChessType.TYP_BISHOP, ChessColor.CLR_WHITE, new Bishop()) ;
@@ -45,7 +48,7 @@ public class Board {
         this.cases[IChess.BOARD_POS_X_KINGSIDE_KNIGHT][7] = new Piece(ChessType.TYP_KNIGHT, ChessColor.CLR_WHITE, new Knight()) ;
         this.cases[IChess.BOARD_POS_X_KINGSIDE_ROOK][7] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_WHITE, new Rook()) ;
         
-        // Black
+        // Black pieces
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_ROOK][0] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_BLACK, new Rook()) ;
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_KNIGHT][0] = new Piece(ChessType.TYP_KNIGHT, ChessColor.CLR_BLACK, new Knight()) ;
         this.cases[IChess.BOARD_POS_X_QUEENSIDE_BISHOP][0] = new Piece(ChessType.TYP_BISHOP, ChessColor.CLR_BLACK, new Bishop()) ;
@@ -55,65 +58,61 @@ public class Board {
         this.cases[IChess.BOARD_POS_X_KINGSIDE_KNIGHT][0] = new Piece(ChessType.TYP_KNIGHT, ChessColor.CLR_BLACK, new Knight()) ;
         this.cases[IChess.BOARD_POS_X_KINGSIDE_ROOK][0] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_BLACK, new Rook()) ;
         
+        // Initialisation of the white/black pieces timer 
         this.timeBlack = 0 ;
         this.timeWhite = 0 ;
+        
+        // Initialisation of the start time (when the application is started and the Board is instancied)
         this.depart = System.currentTimeMillis();
     }
     
+    // This function is in charge of moving pieces
     public Piece movePiece(ChessPosition p0, ChessPosition p1) {
   
+        // We save the position before moving 
         this.moveInfo = new MoveInfo(p0, p1, this) ;
         Piece removedPiece = null ;
         
+        // Increase the number of moves for the piece we are going to move
         this.cases[p0.x][p0.y].increaseNbMoves();
         
         boolean isRoque = false ;
         
+        // Verification if the piece is a pawn who is going to be a Queen
         this.verificationQueen(p0, p1) ;
         
         if (this.cases[p1.x][p1.y] != null) {
             
+            // If it's a roque
             if( this.cases[p1.x][p1.y].getChessColor() == this.cases[p0.x][p0.y].getChessColor() ) {
                 
                 isRoque = true ;
                 
-                if ((p1.x == 0)&&(p1.y == 0)) {
+                // Left Roque
+                if ((p1.x == 0)) {
                     
-                    this.cases[3][0] = this.cases[0][0] ;
-                    this.cases[0][0] = null ;
+                    this.cases[3][p1.y] = this.cases[0][p1.y] ;
+                    this.cases[0][p1.y] = null ;
                     
-                    this.cases[2][0] = this.cases[4][0] ;
-                    this.cases[4][0] = null ;
+                    this.cases[2][p1.y] = this.cases[4][p1.y] ;
+                    this.cases[4][p1.y] = null ;
                 }
-                else if ((p1.x == 7)&&(p1.y == 0)) {
+                // Right Roque
+                else if (p1.x == 7) {
                     
-                    this.cases[5][0] = this.cases[7][0] ;
-                    this.cases[7][0] = null ;
+                    this.cases[5][p1.y] = this.cases[7][p1.y] ;
+                    this.cases[7][p1.y] = null ;
                     
-                    this.cases[6][0] = this.cases[4][0] ;
-                    this.cases[4][0] = null ;
-                }
-                else if ((p1.x == 0)&&(p1.y == 7)) {
-                    
-                    this.cases[3][7] = this.cases[0][7] ;
-                    this.cases[0][7] = null ;
-                    
-                    this.cases[2][7] = this.cases[4][7] ;
-                    this.cases[4][7] = null ;
-                }
-                else if ((p1.x == 7)&&(p1.y == 7)) {
-                    
-                    this.cases[5][7] = this.cases[7][7] ;
-                    this.cases[7][7] = null ;
-                    
-                    this.cases[6][7] = this.cases[4][7] ;
-                    this.cases[4][7] = null ;
+                    this.cases[6][p1.y] = this.cases[4][p1.y] ;
+                    this.cases[4][p1.y] = null ;
                 }
             }
+            // If the position we are going to is a ennemie's piece, we add it in our attribut removedPiece ;
             else {
                 removedPiece = this.cases[p1.x][p1.y] ;
             }
         }
+        // Every other move ecxept the roque
         if(!isRoque) {
             this.cases[p1.x][p1.y] = this.cases[p0.x][p0.y] ;
             this.cases[p0.x][p0.y] = null ; 
@@ -122,6 +121,7 @@ public class Board {
         return removedPiece ;
     }
     
+    // Verification if the piece is going to be a queen
     private void verificationQueen(ChessPosition p0, ChessPosition p1) {
         
         if (this.cases[p0.x][p0.y].getChessType() == ChessType.TYP_PAWN) {
@@ -140,12 +140,14 @@ public class Board {
         }
     }
     
+    // Return the State of the king of the color in parameters
     public ChessKingState getKingState(ChessColor color) {
         
         ChessKingState kingState = ChessKingState.KING_SAFE ;
         
         ChessPosition kingPosition = this.getKingPosition(color) ;
         
+        // Getting all ennemie's pieces possibles movements and checking if they can CheckMate our king
         for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
             
             for(int j=0 ; j < IChess.BOARD_HEIGHT ; j++) {
@@ -172,6 +174,7 @@ public class Board {
         return kingState ;
     }
     
+    // Return the position of the king whith the color in parameters
     private ChessPosition getKingPosition(ChessColor color) {
         
         for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
@@ -193,6 +196,7 @@ public class Board {
         return null ;
     }
     
+    // Return the piece in the position x if it's in the board, it can be null
     public Piece getPiece(ChessPosition position) {
         
         Piece piece = null ;
@@ -204,11 +208,13 @@ public class Board {
         return piece ;
     }
     
+    // Return a list of possible position who don't put our king in checkmated state
     public List<ChessPosition> getKingSafePositionMove(ChessPosition p) {
         
         List<ChessPosition> newListPosition = new ArrayList<ChessPosition>() ;
         List<ChessPosition> listPosition = this.cases[p.x][p.y].getMove(p, this) ;
         
+        // For every possible position we do the move and check if our king is safe or not, if he isn't we add it to the new list and we reiniatialise the preview position 
         for (ChessPosition position : listPosition) {
             
             Piece pieceTemporaire = this.cases[position.x][position.y] ;
@@ -227,6 +233,7 @@ public class Board {
         return newListPosition ;
     }
     
+    // Return the number of pieces with the color we put in paramaters
     public int getPiecesNombre(ChessColor color){
         
         int pieceNombre = 0 ;
@@ -246,10 +253,12 @@ public class Board {
         return pieceNombre ;
     }
     
+    // Return the last piece removed
     public Piece getLastPieceRemoved() {
         return this.lastPieceRemoved ;
     }
     
+    // rewind
     public boolean remontada() {
         
         if (this.moveInfo != null) {
@@ -282,17 +291,33 @@ public class Board {
         return false ;
     }
     
+    public long getTimeWhite() {
+        return this.timeWhite ;
+    }
+    
+    public long getTimeBlack() {
+        return this.timeBlack ;
+    }
+    
+    public void setTimeBlack(Long time) {
+        this.timeBlack = time ;
+    }
+    
+    public void setTimeWhite(Long time) {
+        this.timeWhite = time ;
+    }
+    
     public long getPlayerDuration(ChessColor color, boolean isPlaying) {
         
         if (isPlaying) {
             if (color == ChessColor.CLR_BLACK) {
                 
-                this.timeBlack = System.currentTimeMillis() - this.depart;
+                this.timeBlack = System.currentTimeMillis() - this.depart - this.timeWhite;
                 return this.timeBlack ;
             }
             else {
                 
-                this.timeWhite = System.currentTimeMillis() - this.depart;
+                this.timeWhite = System.currentTimeMillis() - this.depart - this.timeBlack;
                 return this.timeWhite ;
             }
         }
