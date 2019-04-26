@@ -18,7 +18,6 @@ public class ChessModel implements IChess {
     private static IChess instance; // by default equals to null
     private Board board ;
     private PieceManager pieceMgr ;
-    private ChessKingState kingState ;
     
     // constructor
     private ChessModel(){
@@ -80,33 +79,30 @@ public class ChessModel implements IChess {
             
             listPosition = this.board.getKingSafePositionMove(p) ;
             
-            if (listPosition.isEmpty()) {
-                this.kingState = ChessKingState.KING_ISDEAD ;
-            }
         }
-        
+
         return listPosition ;
     }
 
     @Override
     public void movePiece(ChessPosition p0, ChessPosition p1) {
         
-        Piece removedPiece = this.board.movePiece(p0, p1);
-        
-        if (removedPiece != null) {
-            this.pieceMgr.addPiece(removedPiece.getChessColor(), removedPiece.getChessType()) ;
+        if (this.board.getPiece(p0).getChessColor() == ChessColor.CLR_BLACK) {
+            
+            this.board.tourIA() ;
+        }
+        else {
+          
+            Piece removedPiece = this.board.movePiece(p0, p1);
+
+            if (removedPiece != null) {
+                this.pieceMgr.addPiece(removedPiece.getChessColor(), removedPiece.getChessType()) ;
+            }
         }
     }
 
     @Override
     public ChessKingState getKingState(ChessColor color) {
-        
-        if (this.kingState != null) {
-            if(this.kingState == ChessKingState.KING_ISDEAD) {
-                return this.kingState ;
-            }
-        }
-        
         return this.board.getKingState(color) ;
     }
 
@@ -136,6 +132,6 @@ public class ChessModel implements IChess {
 
     @Override
     public long getPlayerDuration(ChessColor color, boolean isPlaying) {
-        return 0;
+        return this.board.getPlayerDuration(color, isPlaying);
     }
 }

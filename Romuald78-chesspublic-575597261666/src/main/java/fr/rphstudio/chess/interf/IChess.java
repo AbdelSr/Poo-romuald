@@ -88,9 +88,6 @@ public interface IChess
          * Value used to indicate the King piece is threaten by at least one opponent piece.
          */
         KING_THREATEN,
-        
-        
-        KING_ISDEAD,
     }
 
     /**

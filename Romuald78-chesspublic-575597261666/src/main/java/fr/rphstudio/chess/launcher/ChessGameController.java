@@ -643,14 +643,6 @@ class ChessGameController extends BasicGameState
             {
                 this.kingStateB = "IN CHECK !";
             }
-            if( this.board.getKingState(ChessColor.CLR_WHITE) == ChessKingState.KING_ISDEAD )
-            {
-                this.kingStateB = "DEAD HAHAHAHA !";
-            }
-            if( this.board.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_ISDEAD )
-            {
-                this.kingStateB = "DEAD HAHAHAHA !";
-            }
         }
         
         // REINIT Game

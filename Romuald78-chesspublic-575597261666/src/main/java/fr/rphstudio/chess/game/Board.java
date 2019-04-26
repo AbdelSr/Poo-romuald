@@ -21,6 +21,10 @@ public class Board {
     private Piece[][] cases ;
     private MoveInfo moveInfo ;
     private Piece lastPieceRemoved ;
+    private long timeBlack ;
+    private long timeWhite ;
+    private long depart ;
+    
     
     public Board() {
         
@@ -50,6 +54,10 @@ public class Board {
         this.cases[IChess.BOARD_POS_X_KINGSIDE_BISHOP][0] = new Piece(ChessType.TYP_BISHOP, ChessColor.CLR_BLACK, new Bishop()) ; 
         this.cases[IChess.BOARD_POS_X_KINGSIDE_KNIGHT][0] = new Piece(ChessType.TYP_KNIGHT, ChessColor.CLR_BLACK, new Knight()) ;
         this.cases[IChess.BOARD_POS_X_KINGSIDE_ROOK][0] = new Piece(ChessType.TYP_ROOK, ChessColor.CLR_BLACK, new Rook()) ;
+        
+        this.timeBlack = 0 ;
+        this.timeWhite = 0 ;
+        this.depart = System.currentTimeMillis();
     }
     
     public Piece movePiece(ChessPosition p0, ChessPosition p1) {
@@ -137,10 +145,6 @@ public class Board {
         ChessKingState kingState = ChessKingState.KING_SAFE ;
         
         ChessPosition kingPosition = this.getKingPosition(color) ;
-        
-        if (kingPosition == null) {
-            return ChessKingState.KING_ISDEAD ;
-        }
         
         for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
             
@@ -276,5 +280,90 @@ public class Board {
         }
         
         return false ;
+    }
+    
+    public long getPlayerDuration(ChessColor color, boolean isPlaying) {
+        
+        if (isPlaying) {
+            if (color == ChessColor.CLR_BLACK) {
+                
+                this.timeBlack = System.currentTimeMillis() - this.depart;
+                return this.timeBlack ;
+            }
+            else {
+                
+                this.timeWhite = System.currentTimeMillis() - this.depart;
+                return this.timeWhite ;
+            }
+        }
+        
+        return 0 ;
+    }
+    
+    public void tourIA() {
+        
+        List <ChessPosition[]> listPositionAttack = new ArrayList<ChessPosition[]>() ;
+        List <ChessPosition[]> listPositionDefense = new ArrayList<ChessPosition[]>() ;
+       
+        for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
+            
+            for(int j=0 ; j < IChess.BOARD_HEIGHT ; j++) {
+                
+                if (this.cases[i][j] != null) {
+                    
+                    if (this.cases[i][j].getChessColor() == ChessColor.CLR_BLACK) {
+
+                        ChessPosition cp = new ChessPosition(i, j) ;
+                        List<ChessPosition> oldListPosition = this.cases[i][j].getMove(cp, this) ;
+                        
+                        for (ChessPosition position : oldListPosition) {
+                                
+                            Piece pieceTemporaire = this.cases[position.x][position.y] ;
+                            Piece pieceOrigine = this.cases[i][j] ;
+                            this.cases[position.x][position.y] = pieceOrigine ;
+                            this.cases[i][j] = null ;
+
+                            if ((this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) && (this.getKingState(ChessColor.CLR_WHITE) == ChessKingState.KING_THREATEN)) {
+                                    
+                                ChessPosition posDepart = new ChessPosition(i, j) ;
+                                ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                                ChessPosition[] positions = {posDepart, posArrive} ;
+                                listPositionAttack.add(positions) ;
+                            }
+                            else if (this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) {
+                            ChessPosition posDepart = new ChessPosition(i, j) ;
+                            ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                            ChessPosition[] positions = {posDepart, posArrive} ;
+                            listPositionDefense.add(positions) ;
+                            }
+
+                            this.cases[position.x][position.y] = pieceTemporaire ;
+                            this.cases[i][j] = pieceOrigine ;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!listPositionAttack.isEmpty()) {
+            
+            int nombreSolutions = listPositionAttack.size() ;
+            int nombreH = (int)(Math.random() * nombreSolutions);
+            
+            ChessPosition[] positions = listPositionAttack.get(nombreH) ;
+            
+            this.cases[positions[1].x][positions[1].y] = this.cases[positions[0].x][positions[0].y] ;
+            this.cases[positions[0].x][positions[0].y] = null ;
+        }
+        else if (!listPositionDefense.isEmpty()){
+            
+            int nombreSolutions = listPositionDefense.size() ;
+            int nombreH = (int)(Math.random() * nombreSolutions);
+            
+            ChessPosition[] positions = listPositionDefense.get(nombreH) ;
+            
+            this.cases[positions[1].x][positions[1].y] = this.cases[positions[0].x][positions[0].y] ;
+            this.cases[positions[0].x][positions[0].y] = null ;
+        }
     }
 }
