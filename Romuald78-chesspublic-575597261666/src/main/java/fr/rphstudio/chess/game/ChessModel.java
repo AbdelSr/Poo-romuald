@@ -40,7 +40,7 @@ public class ChessModel implements IChess {
     public void reinit() {
         this.board = new Board() ;
         this.pieceMgr = new PieceManager() ;
-        this.activeIA = false ;
+        this.activeIA = true    ;
     }
 
     @Override
@@ -59,6 +59,7 @@ public class ChessModel implements IChess {
         Piece piece = this.board.getPiece(p) ;
         
         if (piece != null){
+            
             return piece.getChessColor() ; 
         }
         
@@ -94,7 +95,12 @@ public class ChessModel implements IChess {
         // Pseudo IA qui fonctionne a moitier et qui est très con.
         if (this.activeIA) {
             if (this.board.getPiece(p0).getChessColor() == ChessColor.CLR_BLACK) {
-                this.board.tourIA();
+                
+                Piece removedPiece = this.board.tourIA();
+                
+                if (removedPiece != null) {
+                    this.pieceMgr.addPiece(removedPiece.getChessColor(), removedPiece.getChessType()) ;
+                }
             }
             else {
                 Piece removedPiece = this.board.movePiece(p0, p1);

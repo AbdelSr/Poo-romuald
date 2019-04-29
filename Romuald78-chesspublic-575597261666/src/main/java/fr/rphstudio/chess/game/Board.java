@@ -325,10 +325,15 @@ public class Board {
         return 0 ;
     }
     
-    public void tourIA() {
+    public Piece tourIA() {
         
-        List <ChessPosition[]> listPositionAttack = new ArrayList<ChessPosition[]>() ;
+        List <ChessPosition[]> listPositionDoubleAttackKing = new ArrayList<ChessPosition[]>() ;
+        List <ChessPosition[]> listPositionAttackKing = new ArrayList<ChessPosition[]>() ;
+        List <ChessPosition[]> listPositionAttackGoodPiece = new ArrayList<ChessPosition[]>() ;
+         List <ChessPosition[]> listPositionAttack = new ArrayList<ChessPosition[]>() ;
         List <ChessPosition[]> listPositionDefense = new ArrayList<ChessPosition[]>() ;
+        List <ChessPosition[]> listPositionNeutre = new ArrayList<ChessPosition[]>() ;
+        Piece returnPiece = null ;
        
         for(int i=0 ; i < IChess.BOARD_WIDTH; i++) {
             
@@ -348,18 +353,42 @@ public class Board {
                             this.cases[position.x][position.y] = pieceOrigine ;
                             this.cases[i][j] = null ;
 
-                            if ((this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) && (this.getKingState(ChessColor.CLR_WHITE) == ChessKingState.KING_THREATEN)) {
+                            if ((this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) && (this.getKingState(ChessColor.CLR_WHITE) == ChessKingState.KING_THREATEN) && (pieceTemporaire != null)) {
                                     
                                 ChessPosition posDepart = new ChessPosition(i, j) ;
                                 ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
                                 ChessPosition[] positions = {posDepart, posArrive} ;
-                                listPositionAttack.add(positions) ;
+                                listPositionDoubleAttackKing.add(positions) ;
+                            }
+                            else if ((this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) && (this.getKingState(ChessColor.CLR_WHITE) == ChessKingState.KING_THREATEN)) {
+                                    
+                                ChessPosition posDepart = new ChessPosition(i, j) ;
+                                ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                                ChessPosition[] positions = {posDepart, posArrive} ;
+                                listPositionAttackKing.add(positions) ;
+                            }
+                            else if ((this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) && (pieceTemporaire != null)) {
+                                
+                                if ((pieceTemporaire.getChessType() == ChessType.TYP_QUEEN) && (pieceTemporaire.getChessType() == ChessType.TYP_ROOK) && (pieceTemporaire.getChessType() == ChessType.TYP_KNIGHT) && (pieceTemporaire.getChessType() == ChessType.TYP_BISHOP)) {
+                            
+                                    ChessPosition posDepart = new ChessPosition(i, j) ;
+                                    ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                                    ChessPosition[] positions = {posDepart, posArrive} ;
+                                    listPositionAttackGoodPiece.add(positions) ;
+                                }
+                                else {
+                                    ChessPosition posDepart = new ChessPosition(i, j) ;
+                                    ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                                    ChessPosition[] positions = {posDepart, posArrive} ;
+                                    listPositionAttack.add(positions) ;
+                                }
                             }
                             else if (this.getKingState(ChessColor.CLR_BLACK) == ChessKingState.KING_SAFE) {
-                            ChessPosition posDepart = new ChessPosition(i, j) ;
-                            ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
-                            ChessPosition[] positions = {posDepart, posArrive} ;
-                            listPositionDefense.add(positions) ;
+                                
+                                ChessPosition posDepart = new ChessPosition(i, j) ;
+                                ChessPosition posArrive = new ChessPosition(position.x, position.y) ;
+                                ChessPosition[] positions = {posDepart, posArrive} ;
+                                listPositionDefense.add(positions) ;
                             }
 
                             this.cases[position.x][position.y] = pieceTemporaire ;
@@ -370,15 +399,41 @@ public class Board {
             }
         }
         
-        if (!listPositionAttack.isEmpty()) {
+        if (!listPositionDoubleAttackKing.isEmpty()) {
+            
+            int nombreSolutions = listPositionDoubleAttackKing.size() ;
+            int nombreH = (int)(Math.random() * nombreSolutions);
+            
+            ChessPosition[] positions = listPositionDoubleAttackKing.get(nombreH) ;
+            
+            returnPiece = this.movePiece(positions[0], positions[1]) ;
+        }
+        else if (!listPositionAttackKing.isEmpty()){
+            
+            int nombreSolutions = listPositionAttackKing.size() ;
+            int nombreH = (int)(Math.random() * nombreSolutions);
+            
+            ChessPosition[] positions = listPositionAttackKing.get(nombreH) ;
+            
+            returnPiece = this.movePiece(positions[0], positions[1]) ;
+        }
+        else if (!listPositionAttackGoodPiece.isEmpty()){
+            
+            int nombreSolutions = listPositionAttackGoodPiece.size() ;
+            int nombreH = (int)(Math.random() * nombreSolutions);
+            
+            ChessPosition[] positions = listPositionAttackGoodPiece.get(nombreH) ;
+            
+            returnPiece = this.movePiece(positions[0], positions[1]) ;
+        }
+        else if (!listPositionAttack.isEmpty()){
             
             int nombreSolutions = listPositionAttack.size() ;
             int nombreH = (int)(Math.random() * nombreSolutions);
             
             ChessPosition[] positions = listPositionAttack.get(nombreH) ;
             
-            this.cases[positions[1].x][positions[1].y] = this.cases[positions[0].x][positions[0].y] ;
-            this.cases[positions[0].x][positions[0].y] = null ;
+            returnPiece = this.movePiece(positions[0], positions[1]) ;
         }
         else if (!listPositionDefense.isEmpty()){
             
@@ -387,8 +442,10 @@ public class Board {
             
             ChessPosition[] positions = listPositionDefense.get(nombreH) ;
             
-            this.cases[positions[1].x][positions[1].y] = this.cases[positions[0].x][positions[0].y] ;
-            this.cases[positions[0].x][positions[0].y] = null ;
+            returnPiece = this.movePiece(positions[0], positions[1]) ;
         }
+        
+        
+        return returnPiece ;
     }
 }
